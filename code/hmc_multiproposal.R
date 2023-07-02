@@ -323,7 +323,7 @@ for(nProp in 2^(2:10)) {
   
   ptm <- proc.time()[3]
   results2 <- multiprop_hmc_forked(D=D,
-                                   maxIts=1000,
+                                   maxIts=100000,
                                    stepSize = 0.22,
                                    L=20,
                                    P=nProp,
@@ -332,7 +332,7 @@ for(nProp in 2^(2:10)) {
   nj2    <- numberJumps(results2)
   ess2   <- effectiveSize(results2[,1])
   ess2_2 <- effectiveSize(results2[,D])
-  cat(nProps, tm2, nj2, ess2, ess2_2, "\n",
+  cat(nProp, tm2, nj2, ess2, ess2_2, "\n",
       file = "output/parallel_results.txt", append = TRUE)
   
 }
