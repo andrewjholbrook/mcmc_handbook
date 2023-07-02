@@ -306,20 +306,20 @@ numberJumps <- function(chain,cutoff=3) {
 D <- 10000
 set.seed(1)
 
+ptm <- proc.time()[3]
+results <- adapt_hmc(D=D,
+                     maxIts=100000,
+                     stepSize = 0.22,
+                     targetAccept = 0.65,
+                     L=20)
+tm1    <- proc.time()[3] - ptm
+nj1    <- numberJumps(results)
+ess1   <- effectiveSize(results[,1])
+ess1_2 <- effectiveSize(results[,D])
+cat(1, tm1, nj1, ess1, ess1_2, "\n",
+    file = "output/parallel_results.txt", append = TRUE)
+
 for(nProp in 2^(2:10)) {
-  
-  ptm <- proc.time()[3]
-  results <- adapt_hmc(D=D,
-                       maxIts=100000,
-                       stepSize = 0.22,
-                       targetAccept = 0.65,
-                       L=20)
-  tm1    <- proc.time()[3] - ptm
-  nj1    <- numberJumps(results)
-  ess1   <- effectiveSize(results[,1])
-  ess1_2 <- effectiveSize(results[,D])
-  cat(1, tm1, nj1, ess1, ess1_2, "\n",
-      file = "output/parallel_results.txt", append = TRUE)
   
   ptm <- proc.time()[3]
   results2 <- multiprop_hmc_forked(D=D,
@@ -327,7 +327,7 @@ for(nProp in 2^(2:10)) {
                                    stepSize = 0.22,
                                    L=20,
                                    P=nProp,
-                                   nCores=100)
+                                   nCores=min(nProp,50))
   tm2 <- proc.time()[3] - ptm
   nj2    <- numberJumps(results2)
   ess2   <- effectiveSize(results2[,1])
