@@ -338,26 +338,3 @@ for(nProp in 2^(2:10)) {
 }
 
 
-
-
-
-#
-###
-#
-
-
-
-
-ptm <- proc.time()[3]
-results3 <- multiprop_hmc_forked(D=D,
-                                 maxIts=1000,
-                                 stepSize = 0.22,
-                                 L=20,
-                                 P=200,
-                                 nCores=1)
-tme2 <- proc.time()[3] - ptm
-
-# plot(results3[,1],type="l")
-# plot(results3[,2],type="l")
-numberJumps(results3) 
-
