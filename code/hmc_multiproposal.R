@@ -41,14 +41,19 @@ delta <- function(n) {
   return( min(0.01,n^(-0.5)) )
 }
 
-adapt_hmc <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20) {
+adapt_hmc <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20, saveEvery=1000, cutoff=3) {
   
   Us <- runif(maxIts)
   
-  chain <- matrix(0,maxIts,D)
+  currentMode <- rep(0,maxIts)
   #stepSize <- 1
-  chain[1,] <- rnorm(D)
-  currentU  <- - target(chain[1,])
+  currentState <- rnorm(D)
+  currentU  <- - target(currentState)
+  if(currentState[1] < cutoff) {
+    currentMode[1] <- -1
+  } else {
+    currentMode[1] <- 1
+  }
   
   totalAccept <- rep(0,maxIts)
   Acceptances = 0 # total acceptances within adaptation run (<= SampBound)
@@ -57,7 +62,7 @@ adapt_hmc <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20) {
   Proposed = 0
   
   for (i in 2:maxIts) {
-    proposalState    <- chain[i-1,]
+    proposalState    <- currentState
     momentum         <- rnorm(D)
     currentK   <- sum(momentum^2)/2
     
@@ -73,14 +78,11 @@ adapt_hmc <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20) {
     proposedK = sum(momentum^2)/2
 
     if (log(Us[i]) < currentU + currentK - proposedU - proposedK) {
-      chain[i,]   <- proposalState
+      currentState   <- proposalState
       currentU    <- proposedU
       totalAccept[i] <- 1
       Acceptances = Acceptances + 1
-    } else {
-      chain[i,] <- chain[i-1,]
     }
-    
     SampCount <- SampCount + 1
 
     # tune
@@ -96,12 +98,18 @@ adapt_hmc <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20) {
       Acceptances <- 0
     }
     
+    if(currentState[1] < cutoff) {
+      currentMode[i] <- -1
+    } else {
+      currentMode[i] <- 1
+    }
     
+    if (i %% saveEvery == 0) cat(1,currentState, "\n", file="output/multiPropOutPut.txt")
     if (i %% 1000 == 0) cat("Iteration ", i,"\n","stepSize: ", stepSize, "\n") 
   }
   
   cat("Acceptance rate: ", sum(totalAccept)/(maxIts-1))
-  return(chain)
+  return(currentMode)
 }
 
 
@@ -208,11 +216,13 @@ generate_prop <- function(propIndex,middle,momMag,stepSize,L_jitter) {
   return(list(energy,proposal))
 }
 
-multiprop_hmc_forked <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20, P=100, nCores=4) {
+multiprop_hmc_forked <- function(D, maxIts, targetAccept=0.65, stepSize=1,
+                                 L=20, P=100, nCores=4, saveEvery=1000, cutoff=3) {
   
-  chain <- matrix(0,maxIts,D)
-  chain[1,] <- rnorm(D)
-  currentU  <- - target(chain[1,])
+  #chain <- matrix(0,maxIts,D)
+  currentState <- rnorm(D)
+  currentU  <- - target(currentState)
+  currentMode <- rep(0, maxIts)
   
   totalAccept <- rep(0,maxIts)
   Acceptances = 0 # total acceptances within adaptation run (<= SampBound)
@@ -220,8 +230,14 @@ multiprop_hmc_forked <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20,
   SampCount = 0   # number of samples collected (adapt when = SampBound)
   Proposed = 0
   
+  if(currentState[1] < cutoff) {
+    currentMode[1] <- -1
+  } else {
+    currentMode[1] <- 1
+  }
+  
   for (i in 2:maxIts) {
-    proposalState    <- chain[i-1,]
+    proposalState    <- currentState
     momentum         <- rnorm(D)
     currentK   <- sum(momentum^2)/2
     
@@ -236,7 +252,7 @@ multiprop_hmc_forked <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20,
     energies      <- rep(0,P+1)
     energies[1]   <- currentU + currentK
     proposals     <- matrix(0,D,P+1)
-    proposals[,1] <- chain[i-1,]
+    proposals[,1] <- currentState
     
     # for(j in 1:P) {
     #   propOut <- generate_prop(j,
@@ -258,8 +274,8 @@ multiprop_hmc_forked <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20,
     gumbs <- - log ( -log(runif(P+1)) )
     selection <- which.max(-energies+gumbs)
     
-    chain[i,]   <- proposals[,selection]
-    currentU    <- - target(chain[i,]) # can be made faster
+    currentState   <- proposals[,selection]
+    currentU    <- - target(currentState) # can be made faster
     if(selection != 1) {
       totalAccept[i] <- 1
       Acceptances = Acceptances + 1
@@ -267,34 +283,26 @@ multiprop_hmc_forked <- function(D, maxIts, targetAccept=0.65, stepSize=1, L=20,
     
     SampCount <- SampCount + 1
     
-    # tune
-    # if (SampCount == SampBound) {
-    #   AcceptRatio <- Acceptances / SampBound
-    #   if ( AcceptRatio > targetAccept ) {
-    #     stepSize <- stepSize * (1 + delta(i-1))
-    #   } else {
-    #     stepSize <- stepSize * (1 - delta(i-1))
-    #   }
-    #
-    #   SampCount <- 0
-    #   Acceptances <- 0
-    # }
+    if(currentState[1] < cutoff) {
+      currentMode[i] <- -1
+    } else {
+      currentMode[i] <- 1
+    }
     
-    
+    if (i %% saveEvery == 0) cat(nProp,currentState, "\n", file="output/multiPropOutPut.txt")
     if (i %% 1000 == 0) cat("Iteration ", i,"\n","stepSize: ", stepSize, "\n")
   }
   
   cat("Acceptance rate: ", sum(totalAccept)/(maxIts-1))
-  return(chain)
+  return(currentMode)
 }
 
 numberJumps <- function(chain,cutoff=3) {
-  N <- dim(chain)[1]
+  N <- length(chain)
   count <- 0
   
   for (i in 2:N) {
-    if ( (chain[i-1,1] < cutoff & chain[i,1] > cutoff) |
-         (chain[i-1,1] > cutoff & chain[i,1] < cutoff) ) {
+    if (chain[i]!=chain[i-1]) {
       count <- count + 1
     }
   }
@@ -314,9 +322,7 @@ results <- adapt_hmc(D=D,
                      L=20)
 tm1    <- proc.time()[3] - ptm
 nj1    <- numberJumps(results)
-ess1   <- effectiveSize(results[,1])
-ess1_2 <- effectiveSize(results[,D])
-cat(1, tm1, nj1, ess1, ess1_2, "\n",
+cat(1, tm1, nj1, "\n",
     file = "output/parallel_results.txt", append = TRUE)
 
 for(nProp in 2^(2:10)) {
@@ -327,12 +333,12 @@ for(nProp in 2^(2:10)) {
                                    stepSize = 0.22,
                                    L=20,
                                    P=nProp,
-                                   nCores=min(nProp,50))
+                                   nCores=100L)
   tm2 <- proc.time()[3] - ptm
   nj2    <- numberJumps(results2)
-  ess2   <- effectiveSize(results2[,1])
-  ess2_2 <- effectiveSize(results2[,D])
-  cat(nProp, tm2, nj2, ess2, ess2_2, "\n",
+  # ess2   <- effectiveSize(results2[,1])
+  # ess2_2 <- effectiveSize(results2[,D])
+  cat(nProp, tm2, nj2, "\n",
       file = "output/parallel_results.txt", append = TRUE)
   
 }
