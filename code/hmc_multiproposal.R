@@ -318,7 +318,7 @@ for(k in 1:100) {
   
   ptm <- proc.time()[3]
   results <- adapt_hmc(D=D,
-                       maxIts=100000,
+                       maxIts=1000,
                        stepSize = 0.39,
                        targetAccept = 0.65,
                        L=20)
