@@ -311,15 +311,15 @@ numberJumps <- function(chain,cutoff=3) {
 
 ################################################################################
 
-D <- 10000
+D <- 1000
 set.seed(1)
 
 for(k in 1:100) {
   
   ptm <- proc.time()[3]
   results <- adapt_hmc(D=D,
-                       maxIts=1000,
-                       stepSize = 0.22,
+                       maxIts=100000,
+                       stepSize = 0.39,
                        targetAccept = 0.65,
                        L=20)
   tm1    <- proc.time()[3] - ptm
@@ -332,7 +332,7 @@ for(k in 1:100) {
     ptm <- proc.time()[3]
     results2 <- multiprop_hmc_forked(D=D,
                                      maxIts=1000,
-                                     stepSize = 0.22,
+                                     stepSize = 0.39,
                                      L=20,
                                      P=nProp,
                                      nCores=50L)
