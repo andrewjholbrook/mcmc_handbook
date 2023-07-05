@@ -314,32 +314,36 @@ numberJumps <- function(chain,cutoff=3) {
 D <- 10000
 set.seed(1)
 
-ptm <- proc.time()[3]
-results <- adapt_hmc(D=D,
-                     maxIts=100000,
-                     stepSize = 0.22,
-                     targetAccept = 0.65,
-                     L=20)
-tm1    <- proc.time()[3] - ptm
-nj1    <- numberJumps(results)
-cat(1, tm1, nj1, "\n",
-    file = "output/parallel_results.txt", append = TRUE)
-
-for(nProp in 2^(2:10)) {
+for(k in 1:100) {
   
   ptm <- proc.time()[3]
-  results2 <- multiprop_hmc_forked(D=D,
-                                   maxIts=100000,
-                                   stepSize = 0.22,
-                                   L=20,
-                                   P=nProp,
-                                   nCores=100L)
-  tm2 <- proc.time()[3] - ptm
-  nj2    <- numberJumps(results2)
-  # ess2   <- effectiveSize(results2[,1])
-  # ess2_2 <- effectiveSize(results2[,D])
-  cat(nProp, tm2, nj2, "\n",
+  results <- adapt_hmc(D=D,
+                       maxIts=1000,
+                       stepSize = 0.22,
+                       targetAccept = 0.65,
+                       L=20)
+  tm1    <- proc.time()[3] - ptm
+  nj1    <- numberJumps(results)
+  cat(1, tm1, nj1, "\n",
       file = "output/parallel_results.txt", append = TRUE)
+  
+  for(nProp in 2^(2:10)) {
+    
+    ptm <- proc.time()[3]
+    results2 <- multiprop_hmc_forked(D=D,
+                                     maxIts=1000,
+                                     stepSize = 0.22,
+                                     L=20,
+                                     P=nProp,
+                                     nCores=50L)
+    tm2 <- proc.time()[3] - ptm
+    nj2    <- numberJumps(results2)
+    # ess2   <- effectiveSize(results2[,1])
+    # ess2_2 <- effectiveSize(results2[,D])
+    cat(nProp, tm2, nj2, "\n",
+        file = "output/parallel_results.txt", append = TRUE)
+    
+  }
   
 }
 
