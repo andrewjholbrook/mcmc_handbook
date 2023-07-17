@@ -5117,8 +5117,8 @@
 	<!-- Define operators                                                        -->
 	<operators id="operators" optimizationSchedule="log">
 		<!-- HMC on the GLM model fixed-effects  -->
-		<hamiltonianMonteCarloOperator weight="0.25" nSteps="4" stepSize="1E-2" mode="vanilla"
-										 drawVariance="1.0" autoOptimize="true" targetAcceptanceProbability="0.45"
+		<hamiltonianMonteCarloOperator weight="0.25" nSteps="64" stepSize="1E-2" mode="vanilla"
+										 drawVariance="1.0" autoOptimize="true" targetAcceptanceProbability="0.3"
 										 preconditioningUpdateFrequency="1">
 			<jointGradient>
 				<compoundGradient>
@@ -5136,8 +5136,8 @@
 		</hamiltonianMonteCarloOperator>
 
 		<!-- HMC on the GLM model random-effects  -->
-		<hamiltonianMonteCarloOperator weight="0.25" nSteps="4" stepSize="1E-2" mode="vanilla"
-										 drawVariance="1.0" autoOptimize="true" targetAcceptanceProbability="0.45"
+		<hamiltonianMonteCarloOperator weight="0.25" nSteps="64" stepSize="1E-2" mode="vanilla"
+										 drawVariance="1.0" autoOptimize="true" targetAcceptanceProbability="0.3"
 										 preconditioningUpdateFrequency="1">
 			<jointGradient>
 				<compoundGradient>
@@ -5242,7 +5242,7 @@
 
 		<!-- write log to file                                                       -->
 		<!-- <log id="fileLog" logEvery="50000" fileName="covid10Mar_285plusNYC.Ed.log" overwrite="false"> -->
-		<log id="fileLog" logEvery="10" fileName="output/short.Ed.log" overwrite="false">
+		<log id="fileLog" logEvery="5" fileName="output/tuning640.3.log" overwrite="false">
 			<joint idref="joint"/>
 			<prior idref="prior"/>
 			<likelihood idref="likelihood"/>
