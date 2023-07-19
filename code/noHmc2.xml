@@ -5160,21 +5160,9 @@
 		<randomWalkOperator windowSize="0.0025" weight="1">
         	<parameter idref="glmRandCoefficients"/>
     	</randomWalkOperator>
-    	        <mvnOperator scaleFactor="1" weight="1" formXtXInverse="false">
-        	<parameter idref="glmRandCoefficients"/>
-        	<varMatrix>
-        	<matrixParameter rows="1892" columns="1892">
-				<diagonalMatrix>
-				<duplicatedParameter>
-					<parameter id="one" value="1"/> 
-					<copies>
-						<parameter value="1892"/>
-					</copies>
-				</duplicatedParameter>
-			</diagonalMatrix>
-			</matrixParameter>
-			</varMatrix>
-        </mvnOperator>
+		<adaptableVarianceMultivariateNormalOperator scaleFactor="1.0" weight="1.0" beta="1.0" coefficient="1.0" initial="1" burnin="1" updateEvery="100" autoOptimize="true" formXtXInverse="true" skipRankCheck="true">
+		        	<parameter idref="glmRandCoefficients"/>
+		</adaptableVarianceMultivariateNormalOperator>
         <randomWalkOperator windowSize="2" weight="1">
             <parameter idref="glmCoefficients"/>
         </randomWalkOperator>
