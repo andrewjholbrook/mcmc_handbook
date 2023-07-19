@@ -5191,7 +5191,7 @@
 
 	<!-- Define MCMC                                                             -->
 	<!-- <mcmc id="mcmc" chainLength="150000000" autoOptimize="true" operatorAnalysis="covid10Mar_285plusNYC.Ed.ops"> -->
-	<mcmc id="mcmc" chainLength="1000000" autoOptimize="true" operatorAnalysis="output/noHmc.ops">
+	<mcmc id="mcmc" chainLength="1000000" autoOptimize="true" operatorAnalysis="output/noHmc.ops" autoOptimizeDelay="1000">
 		<joint id="joint">
 			<prior id="prior">
 				<bayesianBridge idref="randomEffects.prior"/>
