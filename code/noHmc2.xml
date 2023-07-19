@@ -5163,7 +5163,7 @@
     	        <mvnOperator scaleFactor="1" weight="1" formXtXInverse="false">
         	<parameter idref="glmRandCoefficients"/>
         	<varMatrix>
-        	<matrixParameter>
+        	<matrixParameter rows="1892" columns="1892">
 				<diagonalMatrix>
 				<duplicatedParameter>
 					<parameter id="one" value="1"/> 
