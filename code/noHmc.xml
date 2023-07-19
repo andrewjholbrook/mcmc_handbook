@@ -5023,7 +5023,7 @@
 		</rootFrequencies>
 		<glmModel id="glmModel" family="logLinear"  checkIdentifiability="true">
             <independentVariables>
-                <parameter id="glmCoefficients" value="0.1 0.8 2.0"/>
+                <parameter id="glmCoefficients" value="0.04 0.8 0.3"/>
                 <designMatrix id="designMatrix">
                 	<!-- predictor: standardized log distances -->
 <!--
@@ -5160,6 +5160,7 @@
 		<randomWalkOperator windowSize="0.0025" weight="1">
         	<parameter idref="glmRandCoefficients"/>
     	</randomWalkOperator>
+<!-- 
         <randomWalkOperator windowSize="2" weight="1">
             <parameter idref="glmCoefficients"/>
         </randomWalkOperator>
@@ -5169,6 +5170,7 @@
         		<parameter idref="designMatrix"/>
         	</varMatrix>
         </mvnOperator>
+ -->
 
 
 
@@ -5304,9 +5306,9 @@
 
 	</mcmc>
 
-	<report>
+<report fileName="output/noHmcTiming.txt">
 		<property name="timer">
-			<mcmc idref="mcmc"/>
+			<object idref="mcmc"/>
 		</property>
 	</report>
 
