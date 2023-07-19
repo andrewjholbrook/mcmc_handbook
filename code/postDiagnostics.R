@@ -38,22 +38,55 @@ df2$Steps <- factor(df2$Steps)
 df2$`Target rate` <- factor(df2$`Target rate`)
 
 gg <- ggplot(df,aes(x=`Target rate`, y=Steps, fill=Median)) +
-  geom_tile(color = "white") + ylab("Leapfrog steps") + xlab("Target acceptance rate") +
+  geom_tile(color = "white") + ylab("Leapfrog steps") + xlab("") +
   geom_text(aes(label=round(Median))) + ggtitle("Median effective sample size") +
   scale_fill_continuous_sequential(palette = "Heat2")+
   theme_bw() + theme(legend.position = "none")
 gg
 
 gg2 <- ggplot(df2,aes(x=`Target rate`, y=Steps, fill=Minimum)) +
-  geom_tile() + ylab("") + xlab("Target acceptance rate") +
+  geom_tile() + ylab("") + xlab("") +
   geom_text(aes(label=round(Minimum))) + ggtitle("Minimum effective sample size") +
   scale_fill_continuous_sequential(palette = "Heat2")+
   theme_bw() + theme(legend.position = "none")
 gg2
 
 
-ggsave("figures/ctmcTuning.pdf",ggarrange(gg,NULL,gg2,nrow=1,labels=c("a","","b"),
-                                          widths = c(1, -0.01, 1)),width = 10,height=4)
+# ggsave("figures/ctmcTuning.pdf",ggarrange(gg,NULL,gg2,nrow=1,labels=c("a","","b"),
+#                                           widths = c(1, -0.01, 1)),width = 10,height=4)
+# system2(command = "pdfcrop",
+#         args    = c("~/mcmc_handbook/figures/ctmcTuning.pdf",
+#                     "~/mcmc_handbook/figures/ctmcTuning.pdf")
+# )
+
+df_timing <- read_table("output/timing.txt",col_names = FALSE)
+df3 <- df
+colnames(df_timing) <- c("Steps","Hours")
+df_timing$Hours <- df_timing$Hours * 100 / 60 # 60 minutes in an hour and 1000 its --> 100000 its
+
+df3 <- merge(df3,df_timing)
+df3$Median <- df3$Median / df3$Hours
+
+df4 <- df2
+df4 <- merge(df4,df_timing)
+df4$Minimum <- df4$Minimum / df4$Hours
+
+gg3 <- ggplot(df3,aes(x=`Target rate`, y=Steps, fill=Median)) +
+  geom_tile(color = "white") + ylab("Leapfrog steps") + xlab("Target acceptance rate") +
+  geom_text(aes(label=round(Median))) + ggtitle("Median effective sample size per hour") +
+  scale_fill_continuous_sequential(palette = "Heat2")+
+  theme_bw() + theme(legend.position = "none")
+gg3
+
+gg4 <- ggplot(df4,aes(x=`Target rate`, y=Steps, fill=Minimum)) +
+  geom_tile() + ylab("") + xlab("Target acceptance rate") +
+  geom_text(aes(label=round(Minimum))) + ggtitle("Minimum effective sample size per hour") +
+  scale_fill_continuous_sequential(palette = "Heat2")+
+  theme_bw() + theme(legend.position = "none")
+gg4
+
+ggsave("figures/ctmcTuning.pdf",ggarrange(gg,NULL,gg2,gg3,NULL,gg4,nrow=2,ncol=3,labels=c("a","","b","c","","d"),
+                                          widths = c(1, -0.01, 1,1,-0.01,1)),width = 10,height=7)
 system2(command = "pdfcrop",
         args    = c("~/mcmc_handbook/figures/ctmcTuning.pdf",
                     "~/mcmc_handbook/figures/ctmcTuning.pdf")

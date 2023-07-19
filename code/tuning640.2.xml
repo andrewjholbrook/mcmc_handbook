@@ -5007,7 +5007,7 @@
 	<!-- The strict clock (Uniform rates across branches)                        -->
 	<strictClockBranchRates id="sampleLoc.branchRates">
 		<rate>
-			<parameter id="sampleLoc.clock.rate" value="3.5" lower="0.0"/>
+			<parameter id="sampleLoc.clock.rate" value="4.0" lower="0.0"/>
 		</rate>
 	</strictClockBranchRates>
 
@@ -5117,7 +5117,7 @@
 	<!-- Define operators                                                        -->
 	<operators id="operators" optimizationSchedule="log">
 		<!-- HMC on the GLM model fixed-effects  -->
-		<hamiltonianMonteCarloOperator weight="0.25" nSteps="64" stepSize="1E-2" mode="vanilla"
+		<hamiltonianMonteCarloOperator weight="1" nSteps="64" stepSize="1E-2" mode="vanilla"
 										 drawVariance="1.0" autoOptimize="true" targetAcceptanceProbability="0.2"
 										 preconditioningUpdateFrequency="1">
 			<jointGradient>
@@ -5136,7 +5136,7 @@
 		</hamiltonianMonteCarloOperator>
 
 		<!-- HMC on the GLM model random-effects  -->
-		<hamiltonianMonteCarloOperator weight="0.25" nSteps="64" stepSize="1E-2" mode="vanilla"
+		<hamiltonianMonteCarloOperator weight="1" nSteps="64" stepSize="1E-2" mode="vanilla"
 										 drawVariance="1.0" autoOptimize="true" targetAcceptanceProbability="0.2"
 										 preconditioningUpdateFrequency="1">
 			<jointGradient>
@@ -5155,10 +5155,11 @@
 		</hamiltonianMonteCarloOperator>
 
 		<!-- A little MH makes things run smoother -->
-		<randomWalkOperator windowSize="0.0025" weight="0.05">
+<!-- 
+		<randomWalkOperator windowSize="0.0025" weight="0.01">
         	<parameter idref="glmRandCoefficients"/>
     	</randomWalkOperator>
-        <randomWalkOperator windowSize="2" weight="0.025">
+        <randomWalkOperator windowSize="2" weight="0.01">
             <parameter idref="glmCoefficients"/>
         </randomWalkOperator>
         <mvnOperator scaleFactor="1" weight="0.025" formXtXInverse="true">
@@ -5167,6 +5168,7 @@
         		<parameter idref="designMatrix"/>
         	</varMatrix>
         </mvnOperator>
+ -->
 
 
 		<!-- Efficient Gibbs sampler on Bayesian Bridge prior for random effects  -->
@@ -5177,16 +5179,18 @@
 		</bayesianBridgeGibbsOperator>
  -->
 
+<!-- 
 		<scaleOperator scaleFactor="0.75" weight="2">
 			<parameter idref="sampleLoc.clock.rate"/>
 		</scaleOperator>
+ -->
 
  	</operators>
 
 
 	<!-- Define MCMC                                                             -->
 	<!-- <mcmc id="mcmc" chainLength="150000000" autoOptimize="true" operatorAnalysis="covid10Mar_285plusNYC.Ed.ops"> -->
-	<mcmc id="mcmc" chainLength="100000" autoOptimize="true" operatorAnalysis="short.Ed.ops">
+	<mcmc id="mcmc" chainLength="10000" autoOptimize="true" operatorAnalysis="short.Ed.ops">
 		<joint id="joint">
 			<prior id="prior">
 				<bayesianBridge idref="randomEffects.prior"/>
@@ -5242,7 +5246,7 @@
 
 		<!-- write log to file                                                       -->
 		<!-- <log id="fileLog" logEvery="50000" fileName="covid10Mar_285plusNYC.Ed.log" overwrite="false"> -->
-		<log id="fileLog" logEvery="5" fileName="output/tuning640.2.log" overwrite="false">
+		<log id="fileLog" logEvery="1" fileName="output/tuning640.2.log" overwrite="false">
 			<joint idref="joint"/>
 			<prior idref="prior"/>
 			<likelihood idref="likelihood"/>
