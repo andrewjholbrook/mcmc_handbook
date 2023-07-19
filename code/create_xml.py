@@ -8,7 +8,7 @@ def main():
             with open("mcmc_handbook/code/tuning.xml","r") as infile:
                 with open("mcmc_handbook/code/tuning" +str(steps)  + str(rates) +".xml","w") as outfile:
                     for s in infile:
-                        outfile.write(s.replace("nSteps=\"4\"", "nSteps=\"" + str(steps) + "\"").replace("targetAcceptanceProbability=\"0.45\"", "targetAcceptanceProbability=\"" +  str(rates) + "\"").replace("tuning.log","tuning"+str(steps)+str(rates)+".log"))
+                        outfile.write(s.replace("nSteps=\"4\"", "nSteps=\"" + str(steps) + "\"").replace("targetAcceptanceProbability=\"0.45\"", "targetAcceptanceProbability=\"" +  str(rates) + "\"").replace("tuning.log","tuning"+str(steps)+str(rates)+".log").replace("short.Ed.ops",str(steps)  + str(rates)+".ops"))
 
 
 if __name__ == '__main__':

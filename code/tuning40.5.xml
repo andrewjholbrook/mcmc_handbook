@@ -5155,20 +5155,19 @@
 		</hamiltonianMonteCarloOperator>
 
 		<!-- A little MH makes things run smoother -->
-<!-- 
 		<randomWalkOperator windowSize="0.0025" weight="0.01">
         	<parameter idref="glmRandCoefficients"/>
     	</randomWalkOperator>
         <randomWalkOperator windowSize="2" weight="0.01">
             <parameter idref="glmCoefficients"/>
         </randomWalkOperator>
-        <mvnOperator scaleFactor="1" weight="0.025" formXtXInverse="true">
+        <mvnOperator scaleFactor="1" weight="0.01" formXtXInverse="true">
         	<parameter idref="glmCoefficients"/>
         	<varMatrix>
         		<parameter idref="designMatrix"/>
         	</varMatrix>
         </mvnOperator>
- -->
+
 
 
 		<!-- Efficient Gibbs sampler on Bayesian Bridge prior for random effects  -->
@@ -5190,7 +5189,7 @@
 
 	<!-- Define MCMC                                                             -->
 	<!-- <mcmc id="mcmc" chainLength="150000000" autoOptimize="true" operatorAnalysis="covid10Mar_285plusNYC.Ed.ops"> -->
-	<mcmc id="mcmc" chainLength="10000" autoOptimize="true" operatorAnalysis="short.Ed.ops">
+	<mcmc id="mcmc" chainLength="10000" autoOptimize="true" operatorAnalysis="output/40.5.ops">
 		<joint id="joint">
 			<prior id="prior">
 				<bayesianBridge idref="randomEffects.prior"/>
