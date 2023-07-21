@@ -1,0 +1,6 @@
+
+Operator analysis
+Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) Smoothed_Pr(accept)
+glmRandCoefficients                               0.0     499548     33830836 67.72    0.2345      0.26        
+randomWalkOperator(glmRandCoefficients)           0.0     499452     33816735 67.71    0.2342      0.18        
+
