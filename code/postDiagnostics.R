@@ -33,8 +33,9 @@ df$Algorithm[df$Algorithm=="RW"] <- "Random walk"
 gg <- ggplot(df,aes(x=Values, fill=Algorithm)) +
   geom_histogram() + xlab(NULL) +
   scale_x_log10() +
-  ggtitle("Effective sample size per hour") +
-  ylab("Number of parameters") +
+  ggtitle("Performance histograms") +
+  ylab("Count (of 1892)") +
+  xlab("Effective sample size per hour") +
   scale_fill_discrete_qualitative(palette = "Harmonic") +
   theme_bw() 
 gg
