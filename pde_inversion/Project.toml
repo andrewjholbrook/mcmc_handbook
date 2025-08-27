@@ -1,0 +1,44 @@
+name = "AdVecMCMC"
+uuid = "4d753540-debd-11e8-1906-e9cd7fe3166f"
+authors = ["Justin Krometis <jkrometis@vt.edu>"]
+version = "0.1.0"
+
+[deps]
+AdvectionDiffusion = "131a23a0-d63f-11e8-0a1f-556f042787a0"
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+Arpack = "7d9fca2a-8960-54d3-9f78-7d1dccf2cb97"
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataFramesMeta = "1313f7d8-7da2-5740-9ea0-a2ca25f37964"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
+GR = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
+GR_jll = "d2c73de3-f751-5644-a686-071e5b155ba9"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+InfDimMCMC = "4a19504a-dba3-11e8-25d2-c927b49d975d"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+MCMCDiagnostics = "6e857e4b-079a-58c4-aeab-bc2670384359"
+Measures = "442fdcdd-2543-5da2-b0f3-8c86c306513e"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+PythonPlot = "274fc56d-3b97-40fa-a1cd-1b4a50311bf9"
+RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+SpectralDiscrete2D = "babb118c-d79d-11e8-098d-5dd6fc61b3ab"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
+
+[extras]
+CUDA_Runtime_jll = "76a88914-d11a-5bdc-97e0-2f5a05c973a2"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
