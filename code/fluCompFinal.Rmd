@@ -1,0 +1,117 @@
+---
+title: "H1N1 node results"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import libraries
+```{r}
+library(tidyverse)
+library(colorspace)
+```
+
+## Read in data from node
+```{r}
+# FULL - leapfrog 8
+full_chain <- read.csv("chain_otherL8full.csv", header = FALSE,
+                       col.names = c("time", "target", "prec"))
+full_cov <- read.csv("latent_covL8full.csv", header = FALSE,
+                     col.names = c("r1c1", "r1c2", "r2c1", "r2c2"))
+full_latent <- read.csv("latent_coordL8full.csv", header = FALSE)
+full_latent <- as.matrix(full_latent)
+
+# BAND = 50 - leapfrog 8
+chainL8B50 <- read.csv("chain_otherL8B50.csv", header = FALSE, 
+                       col.names = c("time", "target", "prec"))
+covL8B50 <- read.csv("latent_covL8B50.csv", header = FALSE, 
+                     col.names = c("r1c1", "r1c2", "r2c1", "r2c2"))
+latentL8B50 <- read.csv("latent_coordL8B50.csv", header = FALSE)
+latentL8B50 <- as.matrix(latentL8B50)
+```
+
+## Explore full data
+```{r}
+# target chain
+plot(full_chain$target[-(1:100)], type = "l")
+coda::effectiveSize(full_chain$target[-(1:100)])
+
+# sigma chain
+plot(full_chain$prec[-(1:100)], type = "l")
+coda::effectiveSize(full_chain$prec[-(1:100)])
+
+# dist chains
+set.seed(12345)
+subset.random <- sample(1:1370, 100)
+
+dist_array <- array(0, dim = c(900, 100, 100))
+for (i in 101:1000){
+  coordmat <- matrix(full_latent[i, ], nrow = 1370, ncol = 2)
+  dist_array[i - 100, , ] <- as.matrix(dist(coordmat[subset.random, ]))
+}
+
+plot(dist_array[, 1, 4], type = "l")
+coda::effectiveSize(dist_array[, 1, 4])
+```
+
+## Explore sparse data
+```{r}
+plot(chainL8B50$target[-(1:1000)], type = "l")
+coda::effectiveSize(chainL8B50$target[-(1:1000)])
+
+# sigma chain
+plot(chainL8B50$prec[-(1:1000)], type = "l")
+coda::effectiveSize(chainL8B50$prec[-(1:1000)])
+
+# dist chains
+distL8B50 <- array(0, dim = c(5000, 100, 100))
+for (i in 5001:10000){
+  coordmat <- matrix(latentL8B50[i, ], nrow = 1370, ncol = 2)
+  distL8B50[i - 5000, , ] <- as.matrix(dist(coordmat[subset.random, ]))
+}
+
+plot(distL8B50[, 1, 4], type = "l")
+coda::effectiveSize(distL8B50[, 1, 4])
+```
+
+
+## ESS across full & sparse case
+```{r}
+fullDist_ess <- matrix(NA, nrow = 100, ncol = 100)
+for (i in 1:99){
+  for (j in (i + 1):100){
+    fullDist_ess[i, j] <- coda::effectiveSize(dist_array[, i, j])
+  }
+}
+```
+```{r}
+sparseDist_ess <- matrix(NA, nrow = 100, ncol = 100)
+for (i in 1:99){
+  for (j in (i + 1):100){
+    sparseDist_ess[i, j] <- coda::effectiveSize(distL8B50[, i, j])
+  }
+}
+```
+
+## Plot comparison
+```{r}
+plot.data <- tibble(`Full gradient` = as.vector(fullDist_ess / 
+                      (full_chain$time[1000] - full_chain$time[101]) * 3600),
+                    `Sparse gradient` = as.vector(sparseDist_ess / 
+                      (chainL8B50$time[10000] - chainL8B50$time[5001]) * 3600)) %>% 
+  gather(., key = "Algorithm", value = "ESS", `Sparse gradient`, `Full gradient`) %>% 
+  na.omit()
+
+p1 <- plot.data %>% 
+  ggplot(aes(ESS, fill = Algorithm)) + 
+  geom_histogram(bins = 20) +
+  scale_x_log10() +
+  labs(title = "Performance histograms", 
+       y = "Count (of 4950)", x = "Effective sample size per hour") + 
+  scale_fill_discrete_qualitative(palette = "Harmonic") + 
+  theme_bw()
+
+p1
+```
